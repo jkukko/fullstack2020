@@ -9,6 +9,15 @@ const Person = (props) => {
   )
 }
 
+const Notification = ({ notification, type }) => {
+  if (notification===null) {return null}
+  return (
+    <div className={type}>
+      {notification}
+    </div>
+  )
+}
+
 const Persons = (props) => {
   let filteredPersons
   if (props.filterValue.length > 0) {
@@ -62,7 +71,8 @@ const App = () => {
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newFilter, setNewFilter ] = useState('')
-  const [ notification, setNotification ] = useState(null)
+  const [ notifications, setNotifications ] = useState(null)
+  const [ notificationType, setNotificationType] = useState(null)
 
   useEffect(() => {
     personService
@@ -96,7 +106,20 @@ const App = () => {
               .getAll()
               .then(newPersons => {
                 setPersons(newPersons)
+                setNewName('')
+                setNewNumber('')
+                setNotifications(`${personObject.name} number updated`)
+                setNotificationType('normal')
+                setTimeout(() => {
+                  setNotifications(null)
+                  setNotificationType(null)}, 5000)
               })
+          }).catch(error => {
+            setNotifications(`Information of ${personObject.name} has already been removed from server`)
+            setNotificationType('error')
+            setTimeout(() => {
+              setNotifications(null)
+              setNotificationType(null)}, 5000)
           })
       }
     } else {
@@ -104,9 +127,14 @@ const App = () => {
         .create(personObject)
           .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+          setNotifications(`${personObject.name} added to phonebook`)
+          setNotificationType('normal')
+          setTimeout(() => {
+            setNotifications(null)
+            setNotificationType(null)}, 5000)
         })
-      setNewName('')
-      setNewNumber('')
     }   
   }
 
@@ -135,9 +163,10 @@ const App = () => {
             .then(updatedPersons => {
               setPersons(updatedPersons)
             })
-            setNotification('Person Removed')
+            setNotifications(`${name} removed from phonebook`)
+            setNotificationType('normal')
             setTimeout(() => {
-              setNotification(null)
+              setNotifications(null)
             }, 5000)
         })
     }
@@ -147,6 +176,7 @@ const App = () => {
     <div>
       <h2>Phonebook</h2>
       <Filter filterValue={newFilter} filterOnChange={handleFilterChange}/>
+      <Notification notification={notifications} type={notificationType} />
       <h3>Add a new</h3>
       <PersonForm onSubmit={addName} 
         nameValue={newName} nameOnChange={handlePersonChange} 
