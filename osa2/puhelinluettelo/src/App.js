@@ -1,69 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import personService from './services/persons'
-
-const Person = (props) => {
-  return (
-    <div>
-      {props.name} {props.number} <button id={props.id} value={props.name} onClick={props.deletePerson}>delete</button>
-    </div>
-  )
-}
-
-const Notification = ({ notification, type }) => {
-  if (notification===null) {return null}
-  return (
-    <div className={type}>
-      {notification}
-    </div>
-  )
-}
-
-const Persons = (props) => {
-  let filteredPersons
-  if (props.filterValue.length > 0) {
-    filteredPersons = props.persons.filter(person => 
-      person.name.toLowerCase().includes(props.filterValue.toLowerCase()))
-    return (
-      <div>
-        <ul>
-          {filteredPersons.map((person,i) => 
-            <Person key={i} name={person.name} number={person.number} deletePerson={props.deletePerson} id={person.id}/>
-          )}          
-        </ul>
-      </div>
-    )
-  } else {
-    return (      
-      <div>
-        <ul>
-          {props.persons.map((person,i) => 
-            <Person key={i} name={person.name} number={person.number} deletePerson={props.deletePerson} id={person.id}/>
-          )}
-        </ul>
-      </div>
-    )    
-  }
-}
-
-const PersonForm = (props) => {
-  return (
-    <form onSubmit={props.onSubmit}>
-      <div>name: <input value={props.nameValue} onChange={props.nameOnChange}/></div>
-      <div>number: <input value={props.numberValue} onChange={props.numberOnChange}/></div>
-      <div><button type="submit">add</button></div>
-    </form>
-  )
-}
-
-const Filter = (props) => {
-  return(
-    <form>
-      <div>
-        filter show with <input value={props.filterValue} onChange={props.filterOnChange}/>
-      </div>
-    </form>
-  )
-}
+import Notification from './components/Notification'
+import Filter from './components/Filter'
+import Person from './components/Person'
+import PersonForm from './components/PersonForm'
+import Persons from './components/Persons'
 
         
 const App = () => {
@@ -115,6 +56,9 @@ const App = () => {
                   setNotificationType(null)}, 5000)
               })
           }).catch(error => {
+            personService
+            .getAll()
+            .then(newPersons => {setPersons(newPersons)})
             setNotifications(`Information of ${personObject.name} has already been removed from server`)
             setNotificationType('error')
             setTimeout(() => {
@@ -168,6 +112,15 @@ const App = () => {
             setTimeout(() => {
               setNotifications(null)
             }, 5000)
+        }).catch(error =>{
+          personService
+          .getAll()
+          .then(updatedPersons => {setPersons(updatedPersons)})
+          setNotifications(`Information of ${name} has already been removed from server`)
+          setNotificationType('error')
+          setTimeout(() => {
+            setNotifications(null)
+            setNotificationType(null)}, 5000)
         })
     }
   }
