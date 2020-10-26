@@ -99,3 +99,22 @@ describe('favorite blog', () => {
   })
 })
 
+describe('most blogs', () => {
+  test('test with list of several values', () => {
+    const mostBlogs = {
+      author: 'Robert C. Martin',
+      blogs: 3
+    }
+    const result = listHelper.mostBlogs(blogs)
+    expect(result).toEqual(mostBlogs)
+  })
+  test('test with list of one value', () => {
+    const mostBlogs = {
+      author: 'Edsger W. Dijkstra',
+      blogs: 1
+    }
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    expect(result).toEqual(mostBlogs)
+  })
+})
+
