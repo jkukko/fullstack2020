@@ -71,7 +71,7 @@ const blogs = [
 ]
 const emptyList = []
 
-describe('tota likes', () => {
+describe('total likes', () => {
   test('when list has only one blog equals the likes of that', () => {
     const result = listHelper.totalLikes(listWithOneBlog)
     expect(result).toBe(5)
@@ -115,6 +115,21 @@ describe('most blogs', () => {
     }
     const result = listHelper.mostBlogs(listWithOneBlog)
     expect(result).toEqual(mostBlogs)
+  })
+})
+
+describe('most Likes', () => {
+  test('test with empty list', () => {
+    const result = listHelper.monstLikes([])
+    expect(result).toEqual(null)
+  })
+  test('test with list of several values', () => {
+    const mostLikes = {
+      author: 'Edsger W. Dijkstra',
+      likes: 17
+    }
+    const result = listHelper.monstLikes(blogs)
+    expect(result).toEqual(mostLikes)
   })
 })
 

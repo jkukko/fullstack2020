@@ -18,16 +18,46 @@ const favoriteBlog = (blogs) => {
 }
 
 const mostBlogs = (blogs) => {
+
+  if (blogs.length === 0 ) {
+    return null
+  }
   const count = lodash.countBy(blogs.map(b => b.author))
   return (
     lodash.orderBy(lodash.map(count, (v, k) => ({ author: k, blogs: v })), ['blogs'], ['desc'])[0]
   )
 }
 
+const monstLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return null
+  }
+
+  const listOfAutorAndLikes = blogs.map(blog => ({ name: blog.author, likes: blog.likes }))
+  
+  const combinedList = {}
+  
+  listOfAutorAndLikes.forEach(author => {
+    if (combinedList[author.name]) {
+      combinedList[author.name] += author.likes
+    } else {
+      combinedList[author.name] = author.likes
+    }
+  })
+
+  const topAuthor = Object.keys(combinedList).reduce((max, next) => {
+    return combinedList[max] >= combinedList[next] ? max : next
+  })
+  
+  return { author: topAuthor, likes: combinedList[topAuthor] }
+
+}
+
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
-  mostBlogs
+  mostBlogs,
+  monstLikes
 }
 
