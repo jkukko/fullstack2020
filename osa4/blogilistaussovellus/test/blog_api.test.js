@@ -34,6 +34,15 @@ const initialBlogs = [
     },
 ]
 
+const newBlog = {
+    _id: '5a422b3a1b54a676234d17f6',
+    title: 'NEW BLOG TEST',
+    author: 'NEW BLOG AUTHOR',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 12,
+    __v: 0
+}
+
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -52,6 +61,18 @@ test('blog contains id field', async() => {
     const blog = response.body
     expect(blog[0].id).toBeDefined()
     expect(blog[0]._id).not.toBeDefined()
+})
+
+test('creating a new blog and POST', async() => {
+    await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+    
+    const response = await api.get('/api/blogs')
+    const blogs = response.body
+    expect(blogs.length).toBe(initialBlogs.length + 1)
+    expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
 })
 
 afterAll(() => {
