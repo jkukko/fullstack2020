@@ -84,7 +84,7 @@ test('blog contains id field', async() => {
     expect(blog[0]._id).not.toBeDefined()
 })
 
-describe('Adding new blog', async() => {
+describe('Adding new blog', () => {
     test('creating a new blog and POST', async() => {
         await api
             .post('/api/blogs')
@@ -119,6 +119,24 @@ describe('Adding new blog', async() => {
     })
     
 })
+
+test('Update blog, changing likes amount', async () => {
+    const blogThatIsUpdated = initialBlogs[0]
+    blogThatIsUpdated.likes = 100
+    
+    await api
+        .put(`/api/blogs/${blogThatIsUpdated._id}`)
+        .send(blogThatIsUpdated)
+        .expect(200)
+        
+    const blogs = await api.get('/api/blogs')
+    const selectBlog = blogs.body.find(b => b._id = blogThatIsUpdated._id)
+
+    console.log(blogs.body)
+
+    expect(selectBlog.likes).toBe(100)
+})
+
 
 
 afterAll(() => {
