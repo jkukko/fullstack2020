@@ -1,3 +1,4 @@
+const { response } = require('express')
 const { TestScheduler } = require('jest')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
@@ -48,6 +49,11 @@ const newBlogWithoutLikes = {
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html' 
 }
 
+const blogMissingTitleAndUrl = {
+    author: 'joouman',
+    likes: 10
+}
+
 beforeEach(async () => {
     await Blog.deleteMany({})
     const blogObject = initialBlogs.map(blog => new Blog(blog))
@@ -79,20 +85,30 @@ test('creating a new blog and POST', async() => {
     expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
 })
 
-test('Post a new blog without likes, adds default likes 0', async() => {
+describe('POST missing information', () => {
+    test('POST a new blog without likes, adds default likes 0', async() => {
 
-    const response = await api
-        .post('/api/blogs')
-        .send(newBlogWithoutLikes)
-        .expect(201)
+        const response = await api
+            .post('/api/blogs')
+            .send(newBlogWithoutLikes)
+            .expect(201)
+    
+        expect(response.body.likes).toBe(0)
+    
+    
+        //const response = await api.get('/api/blogs')
+    
+       //console.log(response.body[response.body.length - 1].likes).toBe(0)
+    })
+    test('POST a new blog missing title and url information', async() => {
 
-    expect(response.body.likes).toBe(0)
-
-
-    //const response = await api.get('/api/blogs')
-
-   //console.log(response.body[response.body.length - 1].likes).toBe(0)
+        await api
+            .post('/api/blogs')
+            .send(blogMissingTitleAndUrl)
+            .expect(400)
+    })
 })
+
 
 afterAll(() => {
     mongoose.connection.close()
