@@ -35,7 +35,6 @@ const initialBlogs = [
 ]
 
 const newBlog = {
-    _id: '5a422b3a1b54a676234d17f6',
     title: 'NEW BLOG TEST',
     author: 'NEW BLOG AUTHOR',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
@@ -43,6 +42,11 @@ const newBlog = {
     __v: 0
 }
 
+const newBlogWithoutLikes = {
+    title: 'NEW BLOG TEST WITHOUT LIKES',
+    author: 'NEW BLOG AUTHOR WITHOUT LIKES',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html' 
+}
 
 beforeEach(async () => {
     await Blog.deleteMany({})
@@ -73,6 +77,21 @@ test('creating a new blog and POST', async() => {
     const blogs = response.body
     expect(blogs.length).toBe(initialBlogs.length + 1)
     expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
+})
+
+test('Post a new blog without likes, adds default likes 0', async() => {
+
+    const response = await api
+        .post('/api/blogs')
+        .send(newBlogWithoutLikes)
+        .expect(201)
+
+    expect(response.body.likes).toBe(0)
+
+
+    //const response = await api.get('/api/blogs')
+
+   //console.log(response.body[response.body.length - 1].likes).toBe(0)
 })
 
 afterAll(() => {
