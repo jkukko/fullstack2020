@@ -54,17 +54,28 @@ const blogMissingTitleAndUrl = {
     likes: 10
 }
 
-beforeEach(async () => {
-    await Blog.deleteMany({})
-    const blogObject = initialBlogs.map(blog => new Blog(blog))
-    const promiseArray = blogObject.map(blog => blog.save())
-    await Promise.all(promiseArray)
+describe('when there is initially some notes saved', () => {
+    beforeEach(async () => {
+        await Blog.deleteMany({})
+        const blogObject = initialBlogs.map(blog => new Blog(blog))
+        const promiseArray = blogObject.map(blog => blog.save())
+        await Promise.all(promiseArray)
+    })
+
+    test('blogs are returned as json', async() => {
+        await api
+            .get('/api/blogs')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+    })
+
+    test('all blogs are returned', async() => {
+        const response = await api.get('/api/blogs')
+        expect(response.body).toHaveLength(initialBlogs.length)
+    })        
 })
 
-test('all blogs are returned', async() => {
-    const response = await api.get('/api/blogs')
-    expect(response.body).toHaveLength(initialBlogs.length)
-})
+
 
 test('blog contains id field', async() => {
     const response = await api.get('/api/blogs')
@@ -73,19 +84,18 @@ test('blog contains id field', async() => {
     expect(blog[0]._id).not.toBeDefined()
 })
 
-test('creating a new blog and POST', async() => {
-    await api
-        .post('/api/blogs')
-        .send(newBlog)
-        .expect(201)
-    
-    const response = await api.get('/api/blogs')
-    const blogs = response.body
-    expect(blogs.length).toBe(initialBlogs.length + 1)
-    expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
-})
-
-describe('POST missing information', () => {
+describe('Adding new blog', async() => {
+    test('creating a new blog and POST', async() => {
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+        
+        const response = await api.get('/api/blogs')
+        const blogs = response.body
+        expect(blogs.length).toBe(initialBlogs.length + 1)
+        expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
+    })
     test('POST a new blog without likes, adds default likes 0', async() => {
 
         const response = await api
@@ -107,6 +117,7 @@ describe('POST missing information', () => {
             .send(blogMissingTitleAndUrl)
             .expect(400)
     })
+    
 })
 
 
