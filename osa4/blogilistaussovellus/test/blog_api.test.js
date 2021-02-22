@@ -1,10 +1,12 @@
+const bcrypt = require('bcrypt')
 const { response } = require('express')
 const { TestScheduler } = require('jest')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const blog = require('../models/blog')
 const Blog = require('../models/blog')
+const { use } = require('express/lib/router')
+const User = require('../models/user')
 
 const api = supertest(app)
 
@@ -54,6 +56,7 @@ const blogMissingTitleAndUrl = {
     likes: 10
 }
 
+
 describe('when there is initially some notes saved', () => {
     beforeEach(async () => {
         await Blog.deleteMany({})
@@ -89,7 +92,7 @@ describe('Adding new blog', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
-            .expect(201)
+            .expect(200)
         
         const response = await api.get('/api/blogs')
         const blogs = response.body
@@ -101,7 +104,7 @@ describe('Adding new blog', () => {
         const response = await api
             .post('/api/blogs')
             .send(newBlogWithoutLikes)
-            .expect(201)
+            .expect(200)
     
         expect(response.body.likes).toBe(0)
     
@@ -132,12 +135,109 @@ test('Update blog, changing likes amount', async () => {
     const blogs = await api.get('/api/blogs')
     const selectBlog = blogs.body.find(b => b._id = blogThatIsUpdated._id)
 
-    console.log(blogs.body)
+    //console.log(blogs.body)
 
     expect(selectBlog.likes).toBe(100)
 })
 
+describe('User tests', () => {
+    beforeEach(async () => {
+        await User.deleteMany({})
 
+        const passwordHash = await bcrypt.hash('root', 10)
+        const user = new User({ username: 'root', name: 'root', passwordHash })
+
+        await user.save
+    })
+
+    test('response is JSON formant', async () => {
+        await api
+            .get('/api/users')
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+    })
+})
+
+describe('Adding new user', () => {
+    test('create a new user', async () => {
+        
+        const usersAtBegining = await api.get('/api/users')
+
+        const newUser = {
+            username: 'jouman' ,
+            name: 'jou man',
+            password: 'salasana'
+        }
+
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+
+        const usersAfterAdding = await api.get('/api/users')
+        const userNames = usersAfterAdding.body.map(u => u.username)
+        expect(usersAfterAdding.body.length).toBe(usersAtBegining.body.length + 1)
+        expect(userNames).toContain(newUser.username)
+    })
+
+    test('user creation failed because the username was too short', async () => {
+
+        const newUser = {
+            username: 'jo',
+            name: 'jou man',
+            password: 'salasana'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.error).toContain('User validation failed: username: Path `username` (`jo`) is shorter than the minimum allowed length (3)')
+    })
+
+    test('user creation failed because username is not unique (already taken)', async () => {
+
+        const userAtBegining = await api.get('/api/users')
+
+        console.log(userAtBegining.body)
+
+        const newUser = {
+            username: 'jouman',
+            name: 'jouman',
+            password: 'salasana'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.error).toContain('User validation failed: username: Error, expected `username` to be unique. Value: `jouman`')
+    })
+
+    test('user creation failed because password was too short', async () => {
+
+        const newUser = {
+            username: 'kayttaja',
+            name: 'kayttaja',
+            password: 'sa'
+        }
+
+        const result = await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .expect('Content-Type', /application\/json/)
+
+        expect(result.body.error).toContain('Password minimum lenght is 3 characters')
+
+    })
+
+})
 
 afterAll(() => {
     mongoose.connection.close()
