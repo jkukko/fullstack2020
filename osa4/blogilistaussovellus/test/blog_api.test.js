@@ -1,11 +1,8 @@
 const bcrypt = require('bcrypt')
-const { response } = require('express')
-const { TestScheduler } = require('jest')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-const { use } = require('express/lib/router')
 const User = require('../models/user')
 
 const api = supertest(app)
@@ -56,6 +53,15 @@ const blogMissingTitleAndUrl = {
     likes: 10
 }
 
+async function getLoginToken () {
+    const loginResponse = await api.post('/api/login')
+        .send({
+            username: 'jouman',
+            password: 'salasana'
+        })
+        .expect(200)
+    return 'bearer ' + loginResponse.body.token
+}
 
 describe('when there is initially some notes saved', () => {
     beforeEach(async () => {
@@ -89,10 +95,13 @@ test('blog contains id field', async() => {
 
 describe('Adding new blog', () => {
     test('creating a new blog and POST', async() => {
+        const token = await getLoginToken()
         await api
             .post('/api/blogs')
+            .set('authorization', token)
             .send(newBlog)
-            .expect(200)
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
         
         const response = await api.get('/api/blogs')
         const blogs = response.body
@@ -100,12 +109,14 @@ describe('Adding new blog', () => {
         expect(blogs[blogs.length - 1].title).toBe(newBlog.title)
     })
     test('POST a new blog without likes, adds default likes 0', async() => {
-
+        const token = await getLoginToken()
         const response = await api
             .post('/api/blogs')
+            .set('authorization', token)
             .send(newBlogWithoutLikes)
-            .expect(200)
-    
+            .expect(201)
+            .expect('Content-Type', /application\/json/)
+
         expect(response.body.likes).toBe(0)
     
     
@@ -114,11 +125,13 @@ describe('Adding new blog', () => {
        //console.log(response.body[response.body.length - 1].likes).toBe(0)
     })
     test('POST a new blog missing title and url information', async() => {
-
+        const token = await getLoginToken()
         await api
             .post('/api/blogs')
+            .set('authorization', token)
             .send(blogMissingTitleAndUrl)
             .expect(400)
+            .expect('Content-Type', /application\/json/)
     })
     
 })
@@ -132,12 +145,9 @@ test('Update blog, changing likes amount', async () => {
         .send(blogThatIsUpdated)
         .expect(200)
         
-    const blogs = await api.get('/api/blogs')
-    const selectBlog = blogs.body.find(b => b._id = blogThatIsUpdated._id)
+    const selectBlog = await api.get(`/api/blogs/${blogThatIsUpdated._id}`)
 
-    //console.log(blogs.body)
-
-    expect(selectBlog.likes).toBe(100)
+    expect(selectBlog.body.likes).toBe(100)
 })
 
 describe('User tests', () => {
