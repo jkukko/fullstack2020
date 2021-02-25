@@ -16,6 +16,15 @@ const App = () => {
     )  
   }, [])
 
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON)
+      setUser(user)
+      blogService.setToken(user.token)
+    }
+  }, [])
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -42,12 +51,16 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    console.log('loggin in with', username, password)
+    //console.log('loggin in with', username, password)
 
     try {
       const user = await loginService.login({
         username, password
       })
+
+      window.localStorage.setItem(
+        'loggedBlogappUser', JSON.stringify(user)
+      )
       setUser(user)
       setUsername('')
       setPassword('')
@@ -57,12 +70,19 @@ const App = () => {
         setErrorMessage(null)
       }, 5000)
     }
+  }
 
+  const handleLogout = () => {
+    window.localStorage.removeItem('loggedBlogappUser')
+    setUser(null)
+    setUsername('')
+    setPassword('')
   }
 
   if (user === null) {
     return (
       <div>
+
         <h2>Log in to application</h2>
         {loginForm()}
       </div>
@@ -74,7 +94,8 @@ const App = () => {
 
         <p>
           <strong>{user.name}</strong> logged in
-          </p>
+        </p>
+        <button onClick={() => handleLogout()}>Logout</button>
 
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
