@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginForm from './components/LoginForm'
+import blogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -24,6 +25,7 @@ const App = () => {
     errorMessage,
     setErrorMessage
   }
+
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -50,7 +52,6 @@ const App = () => {
   const addNewBlog = (event) => {
     event.preventDefault()
 
-
     const blogObject = {
       title: title,
       author: author,
@@ -66,35 +67,15 @@ const App = () => {
       })
   }
 
-  const blogForm = () => (
-    <form onSubmit={addNewBlog}>
-      <div>
-        title:
-        <input
-          type='text'
-          value={title}
-          onChange={({ target }) => setTitle(target.value)}
-        />
-      </div>
-      <div>
-        author:
-        <input
-          type='text'
-          value={author}
-          onChange={({ target }) => setAuthor(target.value)}
-        />
-      </div>
-      <div>
-        url:
-        <input
-          type='text'
-          value={url}
-          onChange={({ target }) => setUrl(target.value)}
-        />
-      </div>
-      <button type='submit'>create</button>
-    </form>
-  )
+  const blogFormInformation = {
+    title,
+    setTitle,
+    author,
+    setAuthor,
+    url,
+    setUrl,
+    addNewBlog
+  }
 
   if (user === null) {
     return (
@@ -114,7 +95,9 @@ const App = () => {
         </p>
         <button onClick={() => handleLogout()}>Logout</button>
 
-        {blogForm()}
+        {blogForm(blogFormInformation)}
+
+
 
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
