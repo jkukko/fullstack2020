@@ -36,3 +36,18 @@
     transform: rotate(360deg);
   }
 }
+
+.error {
+  border: 5px solid red;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-size: 30px
+}
+
+.success {
+  border: 5px solid green;
+  border-radius: 4px;
+  background-color: lightgray;
+  font-size: 30px
+
+}

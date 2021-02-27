@@ -24,10 +24,12 @@ const LoginForm = (props) => {
             props.setUsername('')
             props.setPassword('')
         } catch (exception) {
-            props.setErrorMessage('wrong credentials')
-            setTimeout(() => {
-            props.setErrorMessage(null)
-            }, 5000)
+            props.setUsername('')
+            props.setPassword('')
+            props.setSystemMessage({ style: 'error', message: 'wrong credentials'})
+                setTimeout(() => {
+                    props.setSystemMessage({ message: null })
+                }, 5000)
         }
     
     }
