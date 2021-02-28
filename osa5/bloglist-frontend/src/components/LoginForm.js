@@ -12,8 +12,6 @@ const LoginForm = (props) => {
             password: props.password
         }
 
-        console.log(props.password)
-
         try {
             const user = await loginService.login(info)
 

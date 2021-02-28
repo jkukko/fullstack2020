@@ -3,6 +3,7 @@ import LoginForm from './LoginForm'
 
 
 const BlogFrom = (props) => {
+
     return (
         <form onSubmit={props.addNewBlog}>
             <div>
