@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginForm from './components/LoginForm'
-import blogForm from './components/BlogForm'
+import BlogForm from './components/BlogForm'
+import Tooglable from './components/Togglable'
 import './App.css'
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const blogFormRef = React.createRef()
   
   const longinInformation = {
     username: username,
@@ -52,19 +54,20 @@ const App = () => {
 
   const addNewBlog = (event) => {
     event.preventDefault()
+    blogFormRef.current.toggleVisibility()
 
     const blogObject = {
       title: title,
       author: author,
       url: url
     }
-
-    console.log(blogObject)
-
+    
     blogService.create(blogObject)
       .then(blog => {
         setBlogs(blogs.concat(blog))
         setAuthor('')
+        setTitle('')
+        setUrl('')
         setSystemMessage({ style: 'success', message: `Blog: ${blog.title}, added succesfully`})
         clearMessage()
       })
@@ -89,6 +92,7 @@ const App = () => {
     setUrl,
     addNewBlog
   }
+
 
   if (user === null) {
     return (
@@ -116,8 +120,9 @@ const App = () => {
         </p>
         <button onClick={() => handleLogout()}>Logout</button>
 
-        {blogForm(blogFormInformation)}
-
+        <Tooglable buttonLabel='new blog' ref={blogFormRef}>
+          {BlogForm(blogFormInformation)}
+         </Tooglable>
 
 
         {blogs.map(blog =>
