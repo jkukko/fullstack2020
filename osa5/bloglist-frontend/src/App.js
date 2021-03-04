@@ -45,6 +45,20 @@ const App = () => {
     }
   }, [])
 
+  const handleBlogLiked = async (blogObject) => {
+
+    try {
+      const blogThatWillBeUpdated = {...blogObject, likes: blogObject.likes += 1}
+      const updatedBlog = await blogService.update(blogObject.id, blogThatWillBeUpdated)
+      setSystemMessage({ style: 'success', message:`blog ${updatedBlog.title} liked` })
+      clearMessage()
+    } catch (exception) {
+      console.log(exception.message)
+      setSystemMessage({ style: 'error', message: 'thene was an issues in liking blog' })
+      clearMessage()
+    }
+  }
+
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser')
     setUser(null)
@@ -126,7 +140,7 @@ const App = () => {
 
 
         {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} onClickUpdate={() => handleBlogLiked(blog)}/>
         )}
       </div>
     )  
