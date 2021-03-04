@@ -54,8 +54,25 @@ const App = () => {
       clearMessage()
     } catch (exception) {
       console.log(exception.message)
-      setSystemMessage({ style: 'error', message: 'thene was an issues in liking blog' })
+      setSystemMessage({ style: 'error', message: 'there was an issues in liking blog' })
       clearMessage()
+    }
+  }
+
+  const handleRemoveBlog = async (blogObject) => {
+
+    const check = window.confirm(`Do you want to remove blog ${blogObject.title} by ${blogObject.author}?`)
+
+    if (check) {
+      try {
+        await blogService.remove(blogObject.id)
+        setBlogs(blogs.filter(b => b.id !== blogObject.id))
+        setSystemMessage({ style: 'success', message: `blog ${blogObject.title} removed`})
+        clearMessage()
+      } catch (exception) {
+        setSystemMessage({ style: 'error', message: 'there was an issues in removing blog'})
+        clearMessage()
+      }
     }
   }
 
@@ -140,7 +157,13 @@ const App = () => {
 
 
         {blogs.sort((a,b) => b.likes - a.likes).map(blog =>
-          <Blog key={blog.id} blog={blog} onClickUpdate={() => handleBlogLiked(blog)}/>
+          <Blog 
+            key={blog.id} 
+            blog={blog} 
+            onClickUpdate={() => handleBlogLiked(blog)}
+            onClickRemove={() => handleRemoveBlog(blog)}
+            user={user}
+          />
         )}
       </div>
     )  
