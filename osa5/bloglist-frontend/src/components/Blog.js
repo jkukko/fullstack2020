@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-
 const Blog = ({ blog, onClickUpdate, onClickRemove, user }) => {
   const [visible, setVisible] = useState(false)
 
@@ -35,9 +34,9 @@ const Blog = ({ blog, onClickUpdate, onClickRemove, user }) => {
       <div style={blogStyle}>
         <div>
           {blog.title} <button onClick={toggleVisibility}>hide</button>
-        <div>
-          {blog.url}
         </div>
+          {blog.url}
+        <div>
           {blog.likes} <button onClick={onClickUpdate}>Like</button>
         </div>
         <div>

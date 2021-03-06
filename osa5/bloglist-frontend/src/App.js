@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginForm from './components/LoginForm'
@@ -17,11 +17,10 @@ const App = () => {
   const [url, setUrl] = useState('')
 
   const blogFormRef = React.createRef()
-  
   const longinInformation = {
     username: username,
     setUsername,
-    password, 
+    password,
     setPassword,
     user,
     setUser,
@@ -29,11 +28,10 @@ const App = () => {
     setSystemMessage
   }
 
-
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -48,7 +46,7 @@ const App = () => {
   const handleBlogLiked = async (blogObject) => {
 
     try {
-      const blogThatWillBeUpdated = {...blogObject, likes: blogObject.likes += 1}
+      const blogThatWillBeUpdated = { ...blogObject, likes: blogObject.likes += 1 }
       const updatedBlog = await blogService.update(blogObject.id, blogThatWillBeUpdated)
       setSystemMessage({ style: 'success', message:`blog ${updatedBlog.title} liked` })
       clearMessage()
@@ -67,10 +65,10 @@ const App = () => {
       try {
         await blogService.remove(blogObject.id)
         setBlogs(blogs.filter(b => b.id !== blogObject.id))
-        setSystemMessage({ style: 'success', message: `blog ${blogObject.title} removed`})
+        setSystemMessage({ style: 'success', message: `blog ${blogObject.title} removed` })
         clearMessage()
       } catch (exception) {
-        setSystemMessage({ style: 'error', message: 'there was an issues in removing blog'})
+        setSystemMessage({ style: 'error', message: 'there was an issues in removing blog' })
         clearMessage()
       }
     }
@@ -92,25 +90,24 @@ const App = () => {
       author: author,
       url: url
     }
-    
     blogService.create(blogObject)
       .then(blog => {
         setBlogs(blogs.concat(blog))
         setAuthor('')
         setTitle('')
         setUrl('')
-        setSystemMessage({ style: 'success', message: `Blog: ${blog.title}, added succesfully`})
+        setSystemMessage({ style: 'success', message: `Blog: ${blog.title}, added succesfully` })
         clearMessage()
       })
       .catch(() => {
-        setSystemMessage({ style: 'error', message: 'There was an issues in creating new blog'})
+        setSystemMessage({ style: 'error', message: 'There was an issues in creating new blog' })
         clearMessage()
       })
   }
 
   function clearMessage () {
     setTimeout(() => {
-      setSystemMessage({ style: 'null', message: null})
+      setSystemMessage({ style: 'null', message: null })
     }, 5000)
   }
 
@@ -128,7 +125,7 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        {systemMessage.message === null 
+        {systemMessage.message === null
           ? null
           : <p className={systemMessage.style}>{systemMessage.message}</p>
         }
@@ -139,7 +136,7 @@ const App = () => {
   } else {
     return (
       <div>
-        {systemMessage.message === null 
+        {systemMessage.message === null
           ? null
           : <p className={systemMessage.style}>{systemMessage.message}</p>
         }
@@ -153,20 +150,19 @@ const App = () => {
 
         <Tooglable buttonLabel='new blog' ref={blogFormRef}>
           {BlogForm(blogFormInformation)}
-         </Tooglable>
-
+        </Tooglable>
 
         {blogs.sort((a,b) => b.likes - a.likes).map(blog =>
-          <Blog 
-            key={blog.id} 
-            blog={blog} 
+          <Blog
+            key={blog.id}
+            blog={blog}
             onClickUpdate={() => handleBlogLiked(blog)}
             onClickRemove={() => handleRemoveBlog(blog)}
             user={user}
           />
         )}
       </div>
-    )  
+    )
   }
 
 }
