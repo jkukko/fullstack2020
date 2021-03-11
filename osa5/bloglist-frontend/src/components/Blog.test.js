@@ -4,94 +4,94 @@ import { render, fireEvent } from '@testing-library/react'
 import Blog from './Blog'
 
 test('render content', () => {
-    const blog = {
-        title: 'test blog: title',
-        author: 'test blog: author',
-        url: 'test blog: url',
-        likes: 1,
-        user: {
-            username: 'test username',
-            name: 'test name'    
-        }
+  const blog = {
+    title: 'test blog: title',
+    author: 'test blog: author',
+    url: 'test blog: url',
+    likes: 1,
+    user: {
+      username: 'test username',
+      name: 'test name'
     }
+  }
 
-    const user = {
-        username: 'test username',
-        name: 'test name'
-    }
+  const user = {
+    username: 'test username',
+    name: 'test name'
+  }
 
-    const component = render(
-        <Blog blog={blog} user={user} />
-    )
+  const component = render(
+    <Blog blog={blog} user={user} />
+  )
 
-    expect(component.container).toHaveTextContent(
-        'test blog: title'
-    )
+  expect(component.container).toHaveTextContent(
+    'test blog: title'
+  )
 
-    expect(component.container).toHaveTextContent(
-        'test blog: author'
-    )
+  expect(component.container).toHaveTextContent(
+    'test blog: author'
+  )
 })
 
 test('clicking button to render full blog information', () => {
-    const blog = {
-        title: 'test blog: title',
-        author: 'test blog: author',
-        url: 'test blog: url',
-        likes: 'likes 1',
-        user: {
-            username: 'test username',
-            name: 'test name'    
-        }
+  const blog = {
+    title: 'test blog: title',
+    author: 'test blog: author',
+    url: 'test blog: url',
+    likes: 'likes 1',
+    user: {
+      username: 'test username',
+      name: 'test name'
     }
+  }
 
-    const user = {
-        username: 'test username',
-        name: 'test name'
-    }
+  const user = {
+    username: 'test username',
+    name: 'test name'
+  }
 
-    const component = render(
-        <Blog blog={blog} user={blog.user}/>
-    )
+  const component = render(
+    <Blog blog={blog} user={blog.user}/>
+  )
 
-    const button = component.getByText('view')
-    fireEvent.click(button)
+  const button = component.getByText('view')
+  fireEvent.click(button)
 
-    expect(component.container).toHaveTextContent(
-        'likes 1'
-    )
+  expect(component.container).toHaveTextContent(
+    'likes 1'
+  )
 
-    expect(component.container).toHaveTextContent(
-        'test blog: url'
-    )
+  expect(component.container).toHaveTextContent(
+    'test blog: url'
+  )
 })
 
 test('click like-buttom twice and onClickUpdated is called twice', () => {
-    const blog = {
-        title: 'test blog: title',
-        author: 'test blog: author',
-        url: 'test blog: url',
-        likes: 'likes 1',
-        user: {
-            username: 'test username',
-            name: 'test name'    
-        }
+  const blog = {
+    title: 'test blog: title',
+    author: 'test blog: author',
+    url: 'test blog: url',
+    likes: 'likes 1',
+    user: {
+      username: 'test username',
+      name: 'test name'
     }
+  }
 
-    const user = {
-        username: 'test username',
-        name: 'test name'
-    }
-    
-    const mockHandler = jest.fn()
+  const user = {
+    username: 'test username',
+    name: 'test name'
+  }
 
-    const component = render(
-        <Blog blog={blog} user={user} onClickUpdate={mockHandler} />
-    )
+  const mockHandler = jest.fn()
 
-    const buttonLike = component.getByText('Like')
-    fireEvent.click(buttonLike)
-    fireEvent.click(buttonLike)
+  const component = render(
+    <Blog blog={blog} user={user} onClickUpdate={mockHandler} />
+  )
 
-    expect(mockHandler.mock.calls).toHaveLength(2)
+  const buttonLike = component.getByText('Like')
+  fireEvent.click(buttonLike)
+  fireEvent.click(buttonLike)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
 })

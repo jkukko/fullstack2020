@@ -130,7 +130,10 @@ const App = () => {
           : <p className={systemMessage.style}>{systemMessage.message}</p>
         }
         <h2>Log in to application</h2>
-        {loginForm(longinInformation)}
+        
+        <Tooglable buttonLabel="login">
+          {loginForm(longinInformation)}
+        </Tooglable>
       </div>
     )
   } else {
