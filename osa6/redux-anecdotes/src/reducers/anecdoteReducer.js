@@ -20,7 +20,6 @@ const reducer = (state = [], action) => {
         a.id !== id ? a : changedAnecdote
       )
   }
-
   return state
 }
 

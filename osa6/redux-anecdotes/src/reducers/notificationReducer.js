@@ -1,11 +1,14 @@
 
+let timeoutID
 export const setNotification = (notification, time) => {
+  window.clearTimeout(timeoutID)
   return async dispatch => {
     dispatch({
       type: 'NOTIFICATION',
       data: notification
     })
-    setTimeout(() => {
+
+    timeoutID = window.setTimeout(() => {
       dispatch({
         type: 'RESET'
       })
