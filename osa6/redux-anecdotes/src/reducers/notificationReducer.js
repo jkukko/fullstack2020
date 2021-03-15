@@ -1,15 +1,19 @@
-export const setNotification = (notification) => {
-  return {
-    type: 'NOTIFICATION',
-    data: notification
+
+export const setNotification = (notification, time) => {
+  return async dispatch => {
+    dispatch({
+      type: 'NOTIFICATION',
+      data: notification
+    })
+    setTimeout(() => {
+      dispatch({
+        type: 'RESET'
+      })
+    }, time * 1000)
   }
 }
 
-export const resetNotification = () => {
-  return {
-    type: 'RESET'
-  }
-}
+
 
 const initialState = null
 
