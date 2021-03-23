@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import NewBlog from './components/NewBlog'
-
 import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './utils/storage'
+import { setNotification as jou } from './reducers/notificationReducer'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -16,6 +17,8 @@ const App = () => {
   const [notification, setNotification] = useState(null)
 
   const blogFormRef = React.createRef()
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -47,10 +50,13 @@ const App = () => {
       setUsername('')
       setPassword('')
       setUser(user)
-      notifyWith(`${user.name} welcome back!`)
+      //notifyWith(`${user.name} welcome back!`)
+      dispatch(jou(`${user.name} welcome back!`, 5, false))
       storage.saveUser(user)
     } catch(exception) {
-      notifyWith('wrong username/password', 'error')
+      //dispatch(setNotification(exception.response.data.error, 5))
+      //notifyWith('wrong username/password', 'error')
+      dispatch(jou(exception.response.data.error, 5, true))
     }
   }
 
@@ -59,7 +65,8 @@ const App = () => {
       const newBlog = await blogService.create(blog)
       blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(newBlog))
-      notifyWith(`a new blog '${newBlog.title}' by ${newBlog.author} added!`)
+      //notifyWith(`a new blog '${newBlog.title}' by ${newBlog.author} added!`)
+      dispatch(jou(`a new blog '${newBlog.title}' by ${newBlog.author} added!`, 5, false))
     } catch(exception) {
       console.log(exception)
     }
@@ -70,6 +77,7 @@ const App = () => {
     const likedBlog = { ...blogToLike, likes: blogToLike.likes + 1, user: blogToLike.user.id }
     await blogService.update(likedBlog)
     setBlogs(blogs.map(b => b.id === id ?  { ...blogToLike, likes: blogToLike.likes + 1 } : b))
+    dispatch(jou(`blog ${likedBlog.title} liked`, 5, false))
   }
 
   const handleRemove = async (id) => {
@@ -91,7 +99,7 @@ const App = () => {
       <div>
         <h2>login to application</h2>
 
-        <Notification notification={notification} />
+        <Notification  />
 
         <form onSubmit={handleLogin}>
           <div>
@@ -106,6 +114,7 @@ const App = () => {
             password
             <input
               id='password'
+              type='password'
               value={password}
               onChange={({ target }) => setPassword(target.value)}
             />
@@ -122,7 +131,7 @@ const App = () => {
     <div>
       <h2>blogs</h2>
 
-      <Notification notification={notification} />
+      <Notification  />
 
       <p>
         {user.name} logged in <button onClick={handleLogout}>logout</button>
