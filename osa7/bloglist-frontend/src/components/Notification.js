@@ -5,23 +5,15 @@ import '../App.css'
 const Notification = () => {
   const notification = useSelector(state => state.notification)
 
-  console.log(notification)
-
-  const style = {
-    border: 'solid',
-    padding: 10,
-    borderWidth: 1
-  }
-
   const errorStyle = {
     border: '5px solid red',
-    borderWidth: '1px',
+    borderWidth: 1,
     padding: 10,
   }
 
   const successStyle = {
     border: '5px solid green',
-    borderWidth: '1px',
+    borderWidth: 1,
     padding: 10,
   }
   
