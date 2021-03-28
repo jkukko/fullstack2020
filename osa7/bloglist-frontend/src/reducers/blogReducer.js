@@ -1,4 +1,4 @@
-  import blogService from '../services/blogs'
+import blogService from '../services/blogs'
 
 export const getBlogs = () => {
   return async dispatch => {
@@ -41,6 +41,16 @@ export const deleteBlog = (blogId) => {
   }
 }
 
+export const commentBlog = (blogId, comment) => {
+  return async dispatch => {
+    await blogService.comment(blogId, comment)
+    dispatch({
+      type: 'COMMENT_BLOG',
+      data: { id: blogId, comment: comment }
+    })
+  }
+}
+
 const blogReducer = (state = [], action) => {
   switch (action.type) {
     case 'GET_BLOGS':
@@ -54,6 +64,10 @@ const blogReducer = (state = [], action) => {
     case 'DELETE_BLOG':
       const removedBlogId = action.data
       return state.filter((blog) => blog.id !== removedBlogId)
+    case 'COMMENT_BLOG':
+      const blogId = action.data.id
+      const newComment = action.data.comment
+      return state.map(blog => blog.id !== blogId ? blog : {...blog, comments: blog.comments.concat(newComment)})
     default:
       return state
   }

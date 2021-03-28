@@ -21,7 +21,7 @@ export const loggoutUser = () => {
   }
 }
 
-export const setUser2 = () => {
+export const setUser = () => {
   return async dispatch => {
     const loggedUser = storage.loadUser()
     dispatch({

@@ -1,4 +1,12 @@
 import React, { useState } from 'react'
+import { 
+  Button,
+  TextField,
+  FormControl,
+  makeStyles,
+  Box,
+  Typography
+ } from '@material-ui/core'
 
 const NewBlog = (props) => {
   const [title, setTitle] = useState('')
@@ -17,35 +25,49 @@ const NewBlog = (props) => {
     setUrl('')
   }
 
+  const useStyles = makeStyles({
+    blogForm: {
+      display: 'flex', 
+      flexDirection: 'column',
+      maxWidth: '15%'
+    }
+  })
+
+  const classes = useStyles() 
+
   return (
     <div>
-      <h2>create new</h2>
-      <form onSubmit={handleNewBlog}>
-        <div>
-          author
-          <input
+      <Typography variant='h6'>
+        Create new blog
+      </Typography>
+      <form className={classes.blogForm} onSubmit={handleNewBlog}>
+        <FormControl>
+          <TextField
             id='author'
             value={author}
+            label='author'
             onChange={({ target }) => setAuthor(target.value)}
           />
-        </div>
-        <div>
-          title
-          <input
+        </FormControl>
+        <FormControl>
+          <TextField
             id='title'
             value={title}
+            label='title'
             onChange={({ target }) => setTitle(target.value)}
           />
-        </div>
-        <div>
-          url
-          <input
+        </FormControl>
+        <FormControl>
+          <TextField
             id='url'
             value={url}
+            label='url'
             onChange={({ target }) => setUrl(target.value)}
           />
-        </div>
-        <button id="create">create</button>
+        </FormControl>
+        <Box pt={1}>
+          <Button variant="contained" color="primary" id="create" type='submit'>create</Button>
+        </Box>
       </form>
     </div>
   )
