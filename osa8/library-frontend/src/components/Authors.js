@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation } from '@apollo/client'
 import { ALL_AUTHORS, UPDATE_AUTHOR } from '../queries'
-import { storeKeyNameFromField } from '@apollo/client/utilities'
 
 const Authors = (props) => {
   const [name, setName] = useState('')
@@ -43,7 +42,8 @@ const Authors = (props) => {
     return <div>loading...</div>
   }
 
-  
+  let authorsByName = authors.data.allAuthors.map(a => a.name)
+  console.log(authorsByName)
 
   return (
     <div>
@@ -72,11 +72,14 @@ const Authors = (props) => {
       <div>
         <form onSubmit={submit}>
           <div>
-            name 
-            <input
-              value={name}
-              onChange={({ target }) => setName(target.value)}
-            />
+            name
+            <select value={name} onChange={({ target }) => setName(target.value)}>
+              {authorsByName.map(a => (
+                <option key={a} value={a}>
+                    {a}
+                </option>   
+              ))}
+            </select>
           </div>
           <div>
             born
