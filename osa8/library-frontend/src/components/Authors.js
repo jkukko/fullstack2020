@@ -43,7 +43,7 @@ const Authors = (props) => {
   }
 
   let authorsByName = authors.data.allAuthors.map(a => a.name)
-  console.log(authorsByName)
+  console.log(authors.data.allAuthors)
 
   return (
     <div>
