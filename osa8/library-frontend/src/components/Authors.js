@@ -8,6 +8,7 @@ const Authors = (props) => {
 
   const authors = useQuery(ALL_AUTHORS)
 
+
   const [ updateAuthor, result ] = useMutation(UPDATE_AUTHOR, {
     refetchQueries: [ { query: ALL_AUTHORS } ],
     onError: (error) => {
@@ -22,7 +23,10 @@ const Authors = (props) => {
   const submit = async (event) => {
     event.preventDefault()
 
+    console.log(name, born)
+
     updateAuthor({ variables: { name, born } })
+
 
     setName('')
     setBorn('')
@@ -43,7 +47,6 @@ const Authors = (props) => {
   }
 
   let authorsByName = authors.data.allAuthors.map(a => a.name)
-  console.log(authors.data.allAuthors)
 
   return (
     <div>
@@ -74,6 +77,8 @@ const Authors = (props) => {
           <div>
             name
             <select value={name} onChange={({ target }) => setName(target.value)}>
+              <option value="">
+              </option>
               {authorsByName.map(a => (
                 <option key={a} value={a}>
                     {a}

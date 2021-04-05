@@ -15,8 +15,13 @@ export const ALL_BOOKS = gql`
     allBooks {
       title
       published
+      genres
+      id
+      author {
+        name
     }
   }
+}
 `
 
 export const CREATE_BOOK = gql`
@@ -28,6 +33,9 @@ export const CREATE_BOOK = gql`
       genres: $genres
     ) {
       title
+      published
+      genres
+      id
     }
   }
 `
