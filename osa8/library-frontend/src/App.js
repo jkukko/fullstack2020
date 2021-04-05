@@ -6,7 +6,7 @@ import LoginForm from './components/LoginForm'
 import Recommend from './components/Recommend'
 import { useApolloClient, useSubscription } from '@apollo/client'
 import { useLazyQuery } from '@apollo/client'
-import { BOOK_ADDED, USER } from './queries'
+import { ALL_BOOKS, BOOK_ADDED, USER } from './queries'
 
 const Notification = ({ errorMessage }) => {
   if ( !errorMessage ) {
@@ -61,7 +61,17 @@ const App = () => {
   }
 
   const updateBooksCache = (newAddedBook) => {
-    window.alert(`A new book added: ${newAddedBook.title}`)
+    const includedIn = (set, object) => 
+      set.map(p => p.id).includes(object.id)
+    
+    const dataInStore = client.readQuery({ query: ALL_BOOKS })
+    if (!includedIn(dataInStore.allBooks, newAddedBook)) {
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: { allBooks : dataInStore.allBooks.concat(newAddedBook) }
+      })
+      window.alert(`A new book added: ${newAddedBook.title}`)
+    }
   } 
 
   useSubscription(BOOK_ADDED, {
