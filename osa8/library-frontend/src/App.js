@@ -4,9 +4,9 @@ import Books from './components/Books'
 import NewBook from './components/NewBook'
 import LoginForm from './components/LoginForm'
 import Recommend from './components/Recommend'
-import { useApolloClient } from '@apollo/client'
+import { useApolloClient, useSubscription } from '@apollo/client'
 import { useLazyQuery } from '@apollo/client'
-import { USER } from './queries'
+import { BOOK_ADDED, USER } from './queries'
 
 const Notification = ({ errorMessage }) => {
   if ( !errorMessage ) {
@@ -59,6 +59,16 @@ const App = () => {
     client.resetStore()
     setPage('authors')
   }
+
+  const updateBooksCache = (newAddedBook) => {
+    window.alert(`A new book added: ${newAddedBook.title}`)
+  } 
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      updateBooksCache(subscriptionData.data.bookAdded)
+    }
+  })
 
   return (
     <div>
