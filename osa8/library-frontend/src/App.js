@@ -28,6 +28,7 @@ const App = () => {
   const client = useApolloClient()
 
   const [getUser, result] = useLazyQuery(USER, {
+    pollInterval: 500,
     onError: (error) => {
       notify(error.graphQLErrors[0].message)
     }
@@ -59,7 +60,6 @@ const App = () => {
     setPage('authors')
   }
 
-  console.log(user)
   return (
     <div>
       <Notification errorMessage={errorMessage} />

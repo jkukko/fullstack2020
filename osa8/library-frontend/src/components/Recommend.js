@@ -13,13 +13,12 @@ const Recommend = (props) => {
     }
   })
 
-  const selectedBooks = results.data.allBooks
-
-  console.log(selectedBooks)
-
   if (!props.show) {
     return null
   }
+
+  const selectedBooks = results.data.allBooks
+  //console.log(selectedBooks)
 
   if (results.loading) {
     return <div>loading...</div>

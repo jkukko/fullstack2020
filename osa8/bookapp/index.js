@@ -115,7 +115,7 @@ const resolvers = {
     addBook: async (root, args, { currentUser }) => {
 
       if (!currentUser) {
-        throw new UserInputError('You must log in to add a new book')
+        throw new UserInputError('You must be login to add a new book')
       }
 
       let book = await Book.findOne({ title: args.title })
@@ -171,7 +171,7 @@ const resolvers = {
     editAuthor: async (root, args, { currentUser }) => {
 
       if (!currentUser) {
-        throw new UserInputError('You must log in to edit Author')
+        throw new UserInputError('You must be login to edit Author')
       }
 
       try {

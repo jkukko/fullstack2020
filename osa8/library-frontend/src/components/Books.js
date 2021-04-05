@@ -1,46 +1,55 @@
-
-import React, { useState } from 'react'
-import { useQuery } from '@apollo/client'
+import React, { useEffect, useState } from 'react'
+import { useLazyQuery, useQuery } from '@apollo/client'
 import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
-  const [genreSelector, setGenreSelector] = useState(null)
+  const [ genreSelector, setGenreSelector ] = useState(null)
+  const [books, setBooks] = useState(null)  
+  const booksAll = useQuery(ALL_BOOKS)
 
-  const result = useQuery(ALL_BOOKS)
+  const [getBooksByGenre, result] = useLazyQuery(ALL_BOOKS, { variables: { genre: genreSelector },
+    fetchPolicy: 'cache-and-network',
+    onError: (error) => {
+      props.setError(error.graphQLErrors[0].message)
+    }
+  })
+
+  useEffect(() => {
+    if (result.data) {
+      setBooks(result.data.allBooks)
+    }
+  }, [result.data])
+  
+  useEffect(() => {
+    if (booksAll.data) {
+      setBooks(booksAll.data.allBooks)
+    }
+  }, [booksAll.data])
 
   if (!props.show) {
     return null
   }
 
-  const books = result.data.allBooks
-  const listOfGenres = []
-
-  books.forEach(b => {
-    b.genres.forEach(g =>
-      listOfGenres.includes(g) ? null : listOfGenres.push(g)
+  if ( result.loading ) {
+    return <div>loading...</div>
+  }
+  const listOfGenres = [] 
+  booksAll.data.allBooks.forEach(book => {
+    book.genres.forEach(genre =>
+      listOfGenres.includes(genre) ? null : listOfGenres.push(genre)
     )
   })
-
-  //console.log(listOfGenres)
-
-  let selectedBooks = []
-  if (genreSelector) {
-    selectedBooks = books.filter(b => b.genres.includes(genreSelector))
-  } else {
-    selectedBooks = books
-  }
-
-  const handleGenreSelector = (event) => {
+  
+  const handleGenreSelect = async (event) => {
     event.preventDefault()
 
-    //console.log(event.target.value)
-
-    if (event.target.value === 'all genres') {
+    if (event.target.value === 'all_genres') {
       setGenreSelector(null)
       return
     }
 
     setGenreSelector(event.target.value)
+    getBooksByGenre()
   }
 
   return (
@@ -67,7 +76,7 @@ const Books = (props) => {
               published
             </th>
           </tr>
-          {selectedBooks.map(a =>
+          {books.map(a =>
             <tr key={a.title}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -79,11 +88,11 @@ const Books = (props) => {
 
       <div>
         {listOfGenres.sort().map(g => (
-          <button key={g} value={g} onClick={handleGenreSelector}>
+          <button key={g} value={g} onClick={handleGenreSelect}>
             {g}
           </button>
         ))}
-        <button value={'all genres'} onClick={handleGenreSelector}>all genres</button>
+        <button value={'all_genres'} onClick={handleGenreSelect}>all genres</button>
       </div>
     </div>
   )
