@@ -1,7 +1,6 @@
 require('dotenv').config()
 const { ApolloServer, UserInputError, gql } = require('apollo-server')
 const { v1: uuid } = require('uuid')
-var { authors, books } = require('./data')
 const mongoose = require('mongoose')
 const Book = require('./models/Book')
 const Author = require('./models/Author')
@@ -61,8 +60,8 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    bookCount: () => Book.collection.countDocuments(),
-    authorCount: () => authors.length,
+    bookCount: async () => await Book.collection.countDocuments(),
+    authorCount: async () => await Author.collection.countDocuments(),
     allBooks: async (root, args) => {
       if (args.author && args.genres) {
         const author = await Author.findOne({ name: args.author })
@@ -104,9 +103,15 @@ const resolvers = {
           author = new Author({ name: args.author, born: null });
            await author.save()
         } catch (error) {
-          throw new UserInputError('Error in creating new author', {
-            invalidArgs: args.author,
-          })
+          if (error.name === 'ValidationError') {
+            throw new UserInputError('Author name minimum length is 4', {
+              invalidArgs: args.author,            
+            })
+          } else {
+            throw new UserInputError(error.message, {
+              invalidArgs: args.author,
+            })
+          }
         }
       } 
 
@@ -122,9 +127,15 @@ const resolvers = {
       try {
         await book.save()
       } catch (error) {
-        throw new UserInputError('Error in creating new book', {
-          invalidArgs: args,
-        })
+        if (error.name === 'ValidationError') {
+          throw new UserInputError('Book title minimum length is 2', {
+            invalidArgs: args,
+          })          
+        } else {
+          throw new UserInputError('Error in creating new book', {
+            invalidArgs: args,
+          })
+        }
       }
 
       return book
